@@ -10,35 +10,92 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [250, 300]
+      "position": [
+        -112,
+        -16
+      ],
+      "id": "cdc453ee-8606-4bdb-b85d-e9cf4f0b1349",
+      "webhookId": "e9444ec1-d30c-4210-a94d-22298e97103d"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "http://localhost:8000/extract",
+        "url": "http://192.168.1.12:8000/extract",
         "sendHeaders": true,
-        "headerParameters": {
+        "specifyHeaders": "json",
+        "jsonHeaders": "={\n  \"Authorization\": \"{{$json.headers.authorization}}\"\n}\n",
+        "sendBody": true,
+        "bodyParameters": {
           "parameters": [
             {
-              "name": "Authorization",
-              "value": "Bearer YOUR_FIREBASE_ID_TOKEN"
+              "name": "=receipt_text",
+              "value": "={{ $json.body.receipt_text }}"
             }
           ]
         },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"receipt_text\": \"{{ $json.body.text }}\"\n}",
         "options": {}
       },
       "name": "Call FastAPI",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
-      "position": [500, 300]
+      "position": [
+        144,
+        -16
+      ],
+      "id": "b94f9955-ce5a-4462-ac4d-daafae637522"
+    },
+    {
+      "parameters": {
+        "url": "=http://192.168.1.12:8000/extract/{{$json.id}}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "={\n  \"Authorization\": \"{{$node['Webhook'].json.headers.authorization}}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        -16
+      ],
+      "id": "7d5ca27b-06da-449d-a70d-cb951054d992",
+      "name": "HTTP Request"
     }
   ],
+  "pinData": {},
   "connections": {
     "Webhook": {
-      "main": [[{"node": "Call FastAPI", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Call FastAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call FastAPI": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
-  }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "ca71c611-68be-41a4-92ab-9d8ac9a67b51",
+  "meta": {
+    "instanceId": "f262df572df8b441782e931464b3ecf9c24c825b83113f7351f9634489d6a83c"
+  },
+  "id": "X0JpAlVTCIAAehVA",
+  "tags": []
 }
