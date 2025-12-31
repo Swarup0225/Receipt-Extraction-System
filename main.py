@@ -77,7 +77,7 @@ async def extract_receipt(payload: dict = Body(...), user=Depends(verify_token))
     }
     
     
-    doc_ref = db.collection("receipts").docume
+    doc_ref = db.collection("receipts").document()
     doc_ref.set(doc_data)
 
     return {"id": doc_ref.id, "data": doc_data}
@@ -87,4 +87,5 @@ async def get_receipt(id: str, user=Depends(verify_token)):
     doc = db.collection("receipts").document(id).get()
     if not doc.exists:
         raise HTTPException(status_code=404, detail="Receipt not found")
+
     return doc.to_dict()
